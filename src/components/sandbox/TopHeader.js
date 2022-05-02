@@ -13,17 +13,10 @@ export default function TopHeader() {
   }
 
   const menu = (
-    <Menu
-      items={[
-        {
-          label: '超級管理員'
-        },
-        {
-          danger: true,
-          label: '退出'
-        }
-      ]}
-    />
+    <Menu>
+      <Menu.Item>超級管理員</Menu.Item>
+      <Menu.Item danger>退出</Menu.Item>
+    </Menu>
   )
 
   return (
