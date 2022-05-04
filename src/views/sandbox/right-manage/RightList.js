@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import {
+  editFirstPermission,
+  editSecondPermission,
+  getRights,
+  removeFirstRight,
+  removeSecondRight
+} from '../../../api/rights'
 import { Table, Tag, Button, Modal, Popover, Switch } from 'antd'
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 
@@ -9,8 +15,8 @@ export default function RightList() {
   const [dataSource, setDataSource] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
-  const getRights = async () => {
-    const { data } = await axios.get('http://localhost:5000/rights?_embed=children')
+  const getRightsList = async () => {
+    const data = await getRights()
     // 清除沒有 children 時後端預設的 children: []
     data.forEach((item) => {
       if (item.children.length === 0) {
@@ -20,7 +26,7 @@ export default function RightList() {
     setDataSource(data)
   }
   useEffect(() => {
-    getRights()
+    getRightsList()
   }, [])
 
   const columns = [
@@ -82,13 +88,9 @@ export default function RightList() {
     setDataSource([...dataSource])
 
     if (item.grade === 1) {
-      axios.patch(`http://localhost:5000/rights/${item.id}`, {
-        pagepermisson: item.pagepermisson
-      })
+      editFirstPermission(item)
     } else {
-      axios.patch(`http://localhost:5000/children/${item.id}`, {
-        pagepermisson: item.pagepermisson
-      })
+      editSecondPermission(item)
     }
   }
 
@@ -115,7 +117,7 @@ export default function RightList() {
     // 當前頁面同步狀態 + 後端同步
     if (item.grade === 1) {
       // 如果是刪除一級權限
-      axios.delete(`http://localhost:5000/rights/${item.id}`).then(() => {
+      removeFirstRight(item.id).then(() => {
         // 註: 寫個 timeout 模擬真實後端請求時間
         setTimeout(() => {
           setDataSource(dataSource.filter((data) => data.id !== item.id))
@@ -125,7 +127,7 @@ export default function RightList() {
     } else {
       // 刪除的是二級權限
       console.log(item.rightId)
-      axios.delete(`http://localhost:5000/children/${item.id}`).then(() => {
+      removeSecondRight(item.id).then(() => {
         setTimeout(() => {
           const list = dataSource.filter((data) => data.id === item.rightId)
           list[0].children = list[0].children.filter((data) => data.id !== item.id)

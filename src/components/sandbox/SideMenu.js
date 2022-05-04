@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './index.scss'
 import { useLocation, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { getRights } from '../../api/rights'
 
 // antd
 import { Layout, Menu } from 'antd'
@@ -24,12 +24,12 @@ export default function SideMenu() {
   const openKeys = ['/' + location.pathname.split('/')[1]]
 
   const [menu, setMenu] = useState([])
-  const getRights = async () => {
-    const { data: res } = await axios.get('http://localhost:5000/rights?_embed=children')
-    setMenu(res)
+  const getRightsList = async () => {
+    const data = await getRights()
+    setMenu(data)
   }
   useEffect(() => {
-    getRights()
+    getRightsList()
   }, [])
 
   const iconList = {
