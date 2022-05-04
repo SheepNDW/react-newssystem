@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from 'react'
-import { getRoles, removeRole } from '../../../api/roles'
-import { Table, Button, Modal, message } from 'antd'
+import { getRoles, removeRole, updateRightsList } from '../../../api/roles'
+import { getRights } from '../../../api/rights'
+import { Table, Button, Modal, message, Tree } from 'antd'
 import { DeleteOutlined, UnorderedListOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 
 const { confirm } = Modal
 
 export default function RoleList() {
   const [dataSource, setDataSource] = useState([])
+  const [rightList, setRightList] = useState([])
+  const [currentRights, setCurrentRights] = useState([])
+  const [currentId, setCurrentId] = useState(0)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
+  useEffect(() => {
+    getRoles().then((res) => {
+      setDataSource(res)
+    })
+    getRights().then((res) => {
+      setRightList(res)
+    })
+  }, [])
+
   const columns = [
     {
       title: 'ID',
@@ -31,7 +46,16 @@ export default function RoleList() {
               style={{ marginRight: '10px' }}
               onClick={() => confirmMethod(item)}
             />
-            <Button type="primary" shape="circle" icon={<UnorderedListOutlined />} />
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<UnorderedListOutlined />}
+              onClick={() => {
+                setIsModalVisible(true)
+                setCurrentRights(item.rights)
+                setCurrentId(item.id)
+              }}
+            />
           </div>
         )
       }
@@ -61,15 +85,55 @@ export default function RoleList() {
     })
   }
 
-  useEffect(() => {
-    getRoles().then((res) => {
-      setDataSource(res)
+  const handleOk = () => {
+    setIsModalVisible(false)
+    // #1 同步 dataSource
+    // 註: 也可以直接進行修改後重新請求一次資料, 這樣就不用去操作更新 dataSource
+    setDataSource(
+      dataSource.map((item) => {
+        if (item.id === currentId) {
+          return {
+            ...item,
+            rights: currentRights
+          }
+        }
+        return item
+      })
+    )
+    // #2 發出修改請求
+    updateRightsList(currentId, currentRights).then(() => {
+      message.success('更新權限成功')
     })
-  }, [])
+  }
+
+  const handleCancel = () => {
+    setIsModalVisible(false)
+  }
+
+  const onCheck = (checkedKeys) => {
+    setCurrentRights(checkedKeys.checked)
+  }
 
   return (
     <div>
       <Table dataSource={dataSource} columns={columns} rowKey={(item) => item.id} />
+
+      <Modal
+        title="權限分配"
+        cancelText="取消"
+        okText="確定"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <Tree
+          checkable
+          checkedKeys={currentRights}
+          onCheck={onCheck}
+          checkStrictly={true}
+          treeData={rightList}
+        />
+      </Modal>
     </div>
   )
 }

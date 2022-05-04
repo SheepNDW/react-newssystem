@@ -16,3 +16,13 @@ export const getRoles = () => {
 export const removeRole = (id) => {
   return request(`/roles/${id}`, 'delete')
 }
+
+/**
+ * 更新角色權限
+ * @param {Number} id - 角色 ID
+ * @param {Array} rights - 新的權限列表
+ * @returns
+ */
+export const updateRightsList = (id, rights) => {
+  return request(`/roles/${id}`, 'patch', { rights })
+}
