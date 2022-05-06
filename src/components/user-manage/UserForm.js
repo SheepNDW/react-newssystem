@@ -1,10 +1,14 @@
-import React, { forwardRef, useState } from 'react'
+import React, { forwardRef, useEffect, useState } from 'react'
 import { Form, Select, Input } from 'antd'
 
 const { Option } = Select
 
 const UserForm = forwardRef((props, ref) => {
   const [isDisabled, setIsDisabled] = useState(false)
+
+  useEffect(() => {
+    setIsDisabled(props.isUpdateDisabled)
+  }, [props.isUpdateDisabled])
 
   return (
     <Form ref={ref} layout="vertical">

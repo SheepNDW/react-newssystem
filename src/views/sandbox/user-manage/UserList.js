@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import UserForm from '../../../components/user-manage/UserForm'
-import { getUsers, removeUser, setUser } from '../../../api/user'
+import { getUsers, removeUser, setUser, updateUserInfo, updateUserState } from '../../../api/user'
 import { getRoles } from '../../../api/roles'
 import { getRegions } from '../../../api/region'
 import { Table, Button, Modal, message, Switch } from 'antd'
@@ -10,7 +10,11 @@ const { confirm } = Modal
 
 export default function UserList() {
   const [isAddVisible, setIsAddVisible] = useState(false)
+  const [isUpdateVisible, setIsUpdateVisible] = useState(false)
+  const [isUpdateDisabled, setIsUpdateDisabled] = useState(false)
+  const [currentItem, setCurrentItem] = useState(null)
   const addForm = useRef(null)
+  const updateForm = useRef(null)
 
   // --- 向後台取得資料 ---
   const [dataSource, setDataSource] = useState([])
@@ -41,6 +45,14 @@ export default function UserList() {
     {
       title: '區域',
       dataIndex: 'region',
+      filters: [
+        ...regionList.map((item) => ({
+          text: item.title,
+          value: item.value
+        })),
+        { text: '全球', value: '' }
+      ],
+      onFilter: (value, item) => item.region === value,
       render: (region) => {
         return <b>{region === '' ? '全球' : region}</b>
       }
@@ -60,7 +72,13 @@ export default function UserList() {
       title: '用戶狀態',
       dataIndex: 'roleState',
       render: (roleState, item) => {
-        return <Switch checked={roleState} disabled={item.default}></Switch>
+        return (
+          <Switch
+            checked={roleState}
+            disabled={item.default}
+            onChange={() => handleChange(item)}
+          ></Switch>
+        )
       }
     },
     {
@@ -77,12 +95,43 @@ export default function UserList() {
               disabled={item.default}
             />
 
-            <Button type="primary" shape="circle" icon={<EditOutlined />} disabled={item.default} />
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<EditOutlined />}
+              disabled={item.default}
+              onClick={() => handleUpdate(item)}
+            />
           </div>
         )
       }
     }
   ]
+
+  const handleUpdate = (item) => {
+    // 寫一個 setTimeout 讓 setIsUpdateVisible 變成同步的
+    setTimeout(() => {
+      setIsUpdateVisible(true)
+      if (item.roleId === 1) {
+        // 禁用區域
+        setIsUpdateDisabled(true)
+      } else {
+        // 取消禁用區域
+        setIsUpdateDisabled(false)
+      }
+      updateForm.current.setFieldsValue(item)
+    }, 0)
+
+    setCurrentItem(item)
+  }
+
+  const handleChange = (item) => {
+    item.roleState = !item.roleState
+    updateUserState(item).then(() => {
+      message.success('更新用戶狀態成功')
+      setDataSource([...dataSource])
+    })
+  }
 
   const confirmMethod = (item) => {
     confirm({
@@ -130,6 +179,26 @@ export default function UserList() {
       })
   }
 
+  // 更新用戶方法
+  const updateFormOk = () => {
+    updateForm.current
+      .validateFields()
+      .then((value) => {
+        setIsUpdateVisible(false)
+
+        updateUserInfo(currentItem.id, value).then(async () => {
+          await getUserList()
+          message.success('更新用戶資訊成功')
+        })
+
+        setIsUpdateDisabled(!isUpdateDisabled)
+      })
+      .catch((err) => {
+        console.log(err)
+        message.error('更新失敗 請再試一次')
+      })
+  }
+
   return (
     <>
       <Button type="primary" onClick={() => setIsAddVisible(true)}>
@@ -153,6 +222,25 @@ export default function UserList() {
         onOk={() => addFormOk()}
       >
         <UserForm regionList={regionList} roleList={roleList} ref={addForm} />
+      </Modal>
+
+      <Modal
+        visible={isUpdateVisible}
+        title="更新用戶資訊"
+        okText="更新"
+        cancelText="取消"
+        onCancel={() => {
+          setIsUpdateVisible(false)
+          setIsUpdateDisabled(!isUpdateDisabled)
+        }}
+        onOk={() => updateFormOk()}
+      >
+        <UserForm
+          regionList={regionList}
+          roleList={roleList}
+          ref={updateForm}
+          isUpdateDisabled={isUpdateDisabled}
+        />
       </Modal>
     </>
   )
