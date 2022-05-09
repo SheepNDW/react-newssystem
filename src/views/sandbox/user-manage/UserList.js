@@ -21,9 +21,23 @@ export default function UserList() {
   const [roleList, setRoleList] = useState([])
   const [regionList, setRegionList] = useState([])
 
+  const { roleId, region, username } = JSON.parse(localStorage.getItem('token'))
+  const roleObj = {
+    1: 'superAdmin',
+    2: 'admin',
+    3: 'editor'
+  }
+
   const getUserList = async () => {
     const data = await getUsers()
-    setDataSource(data)
+    setDataSource(
+      roleObj[roleId] === 'superAdmin'
+        ? data
+        : [
+            ...data.filter((item) => item.username === username),
+            ...data.filter((item) => item.region === region && roleObj[item.roleId] === 'editor')
+          ]
+    )
   }
   const getRoleList = async () => {
     const data = await getRoles()
@@ -38,6 +52,7 @@ export default function UserList() {
     getUserList()
     getRoleList()
     getRegionList()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   // ---------------------
 
@@ -240,6 +255,7 @@ export default function UserList() {
           roleList={roleList}
           ref={updateForm}
           isUpdateDisabled={isUpdateDisabled}
+          isUpdate={true}
         />
       </Modal>
     </>

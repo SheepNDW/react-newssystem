@@ -41,8 +41,11 @@ export default function SideMenu() {
     '/publish-manage': <SoundOutlined />
   }
 
+  const {
+    role: { rights }
+  } = JSON.parse(localStorage.getItem('token'))
   const checkPermission = (item) => {
-    return item.pagepermisson
+    return item.pagepermisson && rights.includes(item.key)
   }
 
   const renderMenu = (menuList) => {
