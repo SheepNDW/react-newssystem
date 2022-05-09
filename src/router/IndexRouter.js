@@ -16,6 +16,20 @@ export default function IndexRouter() {
         { path: '/user-manage/list', element: LazyLoad('sandbox/user-manage/UserList') },
         { path: '/right-manage/role/list', element: LazyLoad('sandbox/right-manage/RoleList') },
         { path: '/right-manage/right/list', element: LazyLoad('sandbox/right-manage/RightList') },
+        { path: '/news-manage/add', element: LazyLoad('sandbox/news-manage/NewsAdd') },
+        { path: '/news-manage/category', element: LazyLoad('sandbox/news-manage/NewsCategory') },
+        { path: '/news-manage/draft', element: LazyLoad('sandbox/news-manage/NewsDraft') },
+        { path: '/audit-manage/audit', element: LazyLoad('sandbox/audit-manage/Audit') },
+        { path: '/audit-manage/auditlist', element: LazyLoad('sandbox/audit-manage/AuditList') },
+        {
+          path: '/publish-manage/published',
+          element: LazyLoad('sandbox/publish-manage/Published')
+        },
+        {
+          path: '/publish-manage/unpublished',
+          element: LazyLoad('sandbox/publish-manage/UnPublished')
+        },
+        { path: '/publish-manage/sunset', element: LazyLoad('sandbox/publish-manage/Sunset') },
         // 403 沒有權限
         { path: '*', element: LazyLoad('sandbox/nopermission/NoPermission') }
       ]
