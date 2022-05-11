@@ -1,4 +1,5 @@
 import request from '../utils/request'
+const user = JSON.parse(localStorage.getItem('token'))
 
 /**
  * 取得新聞分類
@@ -16,8 +17,6 @@ export const getCategories = () => {
  * @returns Promise
  */
 export const saveNews = (fromInfo, content, auditState) => {
-  const user = JSON.parse(localStorage.getItem('token'))
-
   return request(`/news`, 'post', {
     ...fromInfo,
     content,
@@ -31,4 +30,21 @@ export const saveNews = (fromInfo, content, auditState) => {
     view: 0
     // publishTime: 0
   })
+}
+
+/**
+ * 取得草稿箱的新聞稿
+ * @returns Promise
+ */
+export const getDrafts = () => {
+  return request(`/news?author=${user.username}&auditState=0&_expand=category`, 'get')
+}
+
+/**
+ * 刪除新聞稿
+ * @param {String} id - 新聞稿 ID
+ * @returns Promise
+ */
+export const removeNews = (id) => {
+  return request(`/news/${id}`, 'delete')
 }

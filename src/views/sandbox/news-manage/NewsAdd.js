@@ -79,7 +79,7 @@ export default function NewsAdd() {
             </Form.Item>
             <Form.Item
               label="新聞分類"
-              name="category"
+              name="categoryId"
               rules={[{ required: true, message: '請選擇新聞分類!' }]}
             >
               <Select>
