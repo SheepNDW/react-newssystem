@@ -31,7 +31,10 @@ export default function NewsDraft() {
     },
     {
       title: '新聞標題',
-      dataIndex: 'title'
+      dataIndex: 'title',
+      render: (title, item) => {
+        return <a href={`#/news-manage/preview/${item.id}`}>{title}</a>
+      }
     },
     {
       title: '作者',

@@ -42,9 +42,18 @@ export const getDrafts = () => {
 
 /**
  * 刪除新聞稿
- * @param {String} id - 新聞稿 ID
+ * @param {Number} id - 新聞稿 ID
  * @returns Promise
  */
 export const removeNews = (id) => {
   return request(`/news/${id}`, 'delete')
+}
+
+/**
+ * 取得單一新聞稿內容
+ * @param {Number} id - 新聞稿 ID
+ * @returns Promise
+ */
+export const getNewsInfo = (id) => {
+  return request(`/news/${id}?_expand=category&_expand=role`, 'get')
 }
