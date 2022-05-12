@@ -33,6 +33,22 @@ export const saveNews = (fromInfo, content, auditState) => {
 }
 
 /**
+ * 更新新聞內容
+ * @param {Number} id - params.id
+ * @param {Object} fromInfo - 新聞資訊
+ * @param {String} content - 新聞內容
+ * @param {Number} auditState - 審核狀態
+ * @returns
+ */
+export const updateNews = (id, fromInfo, content, auditState) => {
+  return request(`/news/${id}`, 'patch', {
+    ...fromInfo,
+    content,
+    auditState
+  })
+}
+
+/**
  * 取得草稿箱的新聞稿
  * @returns Promise
  */
