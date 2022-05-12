@@ -38,12 +38,24 @@ export const saveNews = (fromInfo, content, auditState) => {
  * @param {Object} fromInfo - 新聞資訊
  * @param {String} content - 新聞內容
  * @param {Number} auditState - 審核狀態
- * @returns
+ * @returns Promise
  */
 export const updateNews = (id, fromInfo, content, auditState) => {
   return request(`/news/${id}`, 'patch', {
     ...fromInfo,
     content,
+    auditState
+  })
+}
+
+/**
+ * 更改審核狀態
+ * @param {Number} id - 新聞 id
+ * @param {Number} auditState - 審核狀態
+ * @returns Promise
+ */
+export const updateAuditState = (id, auditState) => {
+  return request(`/news/${id}`, 'patch', {
     auditState
   })
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { getDrafts, removeNews } from '../../../api/news'
+import { getDrafts, removeNews, updateAuditState } from '../../../api/news'
 import { useNavigate } from 'react-router-dom'
-import { Table, Button, Modal, message } from 'antd'
+import { Table, Button, Modal, message, notification } from 'antd'
 import {
   DeleteOutlined,
   EditOutlined,
@@ -69,7 +69,12 @@ export default function NewsDraft() {
                 navigate(`/news-manage/update/${item.id}`)
               }}
             />
-            <Button type="primary" shape="circle" icon={<UploadOutlined />} />
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<UploadOutlined />}
+              onClick={() => handleCheck(item.id)}
+            />
           </div>
         )
       }
@@ -99,6 +104,17 @@ export default function NewsDraft() {
     message.success('已成功刪除')
     setIsLoading(false)
     getDraftList()
+  }
+
+  const handleCheck = async (id) => {
+    await updateAuditState(id, 1)
+    navigate('/audit-manage/list')
+
+    notification.info({
+      message: '通知',
+      description: `您可以到審核列表中查看您的新聞`,
+      placement: 'bottomRight'
+    })
   }
 
   return (
