@@ -15,6 +15,7 @@ export default function NewsPreview() {
 
   const auditList = ['未審核', '審核中', '已通過', '未通過']
   const publishList = ['未發布', '待發布', '已上線', '已下線']
+  const colorList = ['', 'orange', 'green', 'red']
 
   return (
     <>
@@ -38,10 +39,14 @@ export default function NewsPreview() {
               </Descriptions.Item>
               <Descriptions.Item label="區域">{newsInfo.region}</Descriptions.Item>
               <Descriptions.Item label="審核狀態">
-                <span style={{ color: 'red' }}>{auditList[newsInfo.auditState]}</span>
+                <span style={{ color: colorList[newsInfo.auditState] }}>
+                  {auditList[newsInfo.auditState]}
+                </span>
               </Descriptions.Item>
               <Descriptions.Item label="發布狀態">
-                <span style={{ color: 'red' }}>{publishList[newsInfo.publishState]}</span>
+                <span style={{ color: colorList[newsInfo.publishState] }}>
+                  {publishList[newsInfo.publishState]}
+                </span>
               </Descriptions.Item>
               <Descriptions.Item label="訪問數量">{newsInfo.view}</Descriptions.Item>
               <Descriptions.Item label="點讚數量">{newsInfo.star}</Descriptions.Item>

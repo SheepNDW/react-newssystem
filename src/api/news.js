@@ -1,5 +1,4 @@
 import request from '../utils/request'
-const user = JSON.parse(localStorage.getItem('token'))
 
 /**
  * 取得新聞分類
@@ -17,6 +16,7 @@ export const getCategories = () => {
  * @returns Promise
  */
 export const saveNews = (fromInfo, content, auditState) => {
+  const user = JSON.parse(localStorage.getItem('token'))
   return request(`/news`, 'post', {
     ...fromInfo,
     content,
@@ -34,7 +34,7 @@ export const saveNews = (fromInfo, content, auditState) => {
 
 /**
  * 更新新聞內容
- * @param {Number} id - params.id
+ * @param {Number} id - 新聞id
  * @param {Object} fromInfo - 新聞資訊
  * @param {String} content - 新聞內容
  * @param {Number} auditState - 審核狀態
@@ -61,10 +61,35 @@ export const updateAuditState = (id, auditState) => {
 }
 
 /**
+ * 修改發布狀態
+ * @param {Number} id - 新聞 id
+ * @param {Number} publishState - 審核狀態
+ * @returns Promise
+ */
+export const updatePublishState = (id, publishState) => {
+  return request(`/news/${id}`, 'patch', {
+    publishState
+  })
+}
+
+/**
+ * 發布新聞
+ * @param {Number} id - 新聞 id
+ * @returns Promise
+ */
+export const publish = (id) => {
+  return request(`/news/${id}`, 'patch', {
+    publishState: 2,
+    publishTime: Date.now()
+  })
+}
+
+/**
  * 取得草稿箱的新聞稿
  * @returns Promise
  */
 export const getDrafts = () => {
+  const user = JSON.parse(localStorage.getItem('token'))
   return request(`/news?author=${user.username}&auditState=0&_expand=category`, 'get')
 }
 
@@ -84,4 +109,24 @@ export const removeNews = (id) => {
  */
 export const getNewsInfo = (id) => {
   return request(`/news/${id}?_expand=category&_expand=role`, 'get')
+}
+
+/**
+ * 取得審核列表
+ * @returns Promise
+ */
+export const getAuditList = () => {
+  const user = JSON.parse(localStorage.getItem('token'))
+  return request(
+    `/news?author=${user.username}&auditState_ne=0&publishState_lte=1&_expand=category`,
+    'get'
+  )
+}
+
+/**
+ * 取得正在審核中的新聞
+ * @returns Promise
+ */
+export const getAuditing = () => {
+  return request(`/news?auditState=1&_expand=category`, 'get')
 }

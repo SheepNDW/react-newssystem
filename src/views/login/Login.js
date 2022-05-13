@@ -15,7 +15,7 @@ export default function Login() {
       message.error('密碼錯誤或用戶名不存在!')
     } else {
       localStorage.setItem('token', JSON.stringify(data[0]))
-      navigate('/')
+      navigate('/home')
     }
   }
   return (
