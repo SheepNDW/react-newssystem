@@ -22,7 +22,7 @@ export default function IndexRouter() {
         { path: '/news-manage/preview/:id', element: LazyLoad('sandbox/news-manage/NewsPreview') },
         { path: '/news-manage/update/:id', element: LazyLoad('sandbox/news-manage/NewsUpdate') },
         { path: '/audit-manage/audit', element: LazyLoad('sandbox/audit-manage/Audit') },
-        { path: '/audit-manage/auditlist', element: LazyLoad('sandbox/audit-manage/AuditList') },
+        { path: '/audit-manage/list', element: LazyLoad('sandbox/audit-manage/AuditList') },
         {
           path: '/publish-manage/published',
           element: LazyLoad('sandbox/publish-manage/Published')
