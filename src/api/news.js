@@ -9,6 +9,15 @@ export const getCategories = () => {
 }
 
 /**
+ * 刪除新聞分類
+ * @param {Number} id - 分類ID
+ * @returns Promise
+ */
+export const removeCategories = (id) => {
+  return request(`/categories/${id}`, 'delete')
+}
+
+/**
  * 新增新聞稿
  * @param {Object} fromInfo - 新聞資訊
  * @param {String} content - 新聞內容
