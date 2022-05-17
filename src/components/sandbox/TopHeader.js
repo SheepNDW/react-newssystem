@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { connect } from 'react-redux'
 
 // antd
 import { Layout, Dropdown, Menu, Avatar } from 'antd'
@@ -7,10 +8,10 @@ import { MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined } from '@ant-design/
 
 const { Header } = Layout
 
-export default function TopHeader() {
-  const [collapsed, setCollapsed] = useState(false)
-  const ChangeCollapsed = () => {
-    setCollapsed(!collapsed)
+function TopHeader(props) {
+  const changeCollapsed = () => {
+    // 改變 state 的 isCollapsed
+    props.changeCollapsed()
   }
 
   const {
@@ -37,10 +38,10 @@ export default function TopHeader() {
 
   return (
     <Header className="site-layout-background" style={{ padding: '0 1rem' }}>
-      {collapsed ? (
-        <MenuUnfoldOutlined onClick={ChangeCollapsed} />
+      {props.isCollapsed ? (
+        <MenuUnfoldOutlined onClick={changeCollapsed} />
       ) : (
-        <MenuFoldOutlined onClick={ChangeCollapsed} />
+        <MenuFoldOutlined onClick={changeCollapsed} />
       )}
       <div style={{ float: 'right' }}>
         <span style={{ marginRight: '10px' }}>
@@ -53,3 +54,19 @@ export default function TopHeader() {
     </Header>
   )
 }
+
+const mapStateToProps = ({ CollapsedReducer: { isCollapsed } }) => {
+  return {
+    isCollapsed
+  }
+}
+
+const mapDispatchToProps = {
+  changeCollapsed() {
+    return {
+      type: 'change_collapsed'
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TopHeader)

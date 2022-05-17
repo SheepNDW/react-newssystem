@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import './index.scss'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getRights } from '../../api/rights'
+import { connect } from 'react-redux'
 
 // antd
 import { Layout, Menu } from 'antd'
@@ -17,7 +18,7 @@ import {
 const { Sider } = Layout
 const { SubMenu } = Menu
 
-export default function SideMenu() {
+function SideMenu(props) {
   const navigate = useNavigate()
   const location = useLocation()
   const selectedKeys = [location.pathname]
@@ -75,7 +76,7 @@ export default function SideMenu() {
   }
 
   return (
-    <Sider trigger={null} collapsible collapsed={false}>
+    <Sider trigger={null} collapsible collapsed={props.isCollapsed}>
       <div style={{ display: 'flex', height: '100%', flexDirection: 'column' }}>
         <div className="logo">全球新聞發布系統</div>
         <div style={{ flex: 1, overflow: 'auto' }}>
@@ -87,3 +88,7 @@ export default function SideMenu() {
     </Sider>
   )
 }
+
+const mapStateToProps = ({ CollapsedReducer: { isCollapsed } }) => ({ isCollapsed })
+
+export default connect(mapStateToProps)(SideMenu)
