@@ -3,15 +3,16 @@ import { Outlet } from 'react-router-dom'
 import SideMenu from '../../components/sandbox/SideMenu'
 import TopHeader from '../../components/sandbox/TopHeader'
 import './NewsSandBox.scss'
+import { connect } from 'react-redux'
 
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
 // antd
-import { Layout } from 'antd'
+import { Layout, Spin } from 'antd'
 const { Content } = Layout
 
-export default function NewsSandBox() {
+function NewsSandBox(props) {
   NProgress.start()
   useEffect(() => {
     NProgress.done()
@@ -30,9 +31,15 @@ export default function NewsSandBox() {
             overflow: 'auto'
           }}
         >
-          <Outlet></Outlet>
+          <Spin size="large" spinning={props.isLoading}>
+            <Outlet></Outlet>
+          </Spin>
         </Content>
       </Layout>
     </Layout>
   )
 }
+
+const mapStateToProps = ({ LoadingReducer: { isLoading } }) => ({ isLoading })
+
+export default connect(mapStateToProps)(NewsSandBox)
