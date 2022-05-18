@@ -155,3 +155,11 @@ export const getMostViews = () => {
 export const getMostStars = () => {
   return request(`/news?publishState=2&_expand=category&_sort=star&_order=desc&_limit=6`, 'get')
 }
+
+/**
+ * 取得所有已發布新聞
+ * @returns Promise
+ */
+export const getAllPublished = () => {
+  return request(`/news?publishState=2&_expand=category`, 'get')
+}
