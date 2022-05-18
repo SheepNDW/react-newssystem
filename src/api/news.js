@@ -139,3 +139,19 @@ export const getAuditList = () => {
 export const getAuditing = () => {
   return request(`/news?auditState=1&_expand=category`, 'get')
 }
+
+/**
+ * 取得用戶最常瀏覽新聞
+ * @returns Promise
+ */
+export const getMostViews = () => {
+  return request(`/news?publishState=2&_expand=category&_sort=view&_order=desc&_limit=6`, 'get')
+}
+
+/**
+ * 取得用戶點讚最多新聞
+ * @returns Promise
+ */
+export const getMostStars = () => {
+  return request(`/news?publishState=2&_expand=category&_sort=star&_order=desc&_limit=6`, 'get')
+}
