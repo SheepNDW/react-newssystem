@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Row, Col, Card, List, Avatar } from 'antd'
-import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons'
+import { Row, Col, Card, List, Avatar, Drawer } from 'antd'
+import { EditOutlined, EllipsisOutlined, PieChartOutlined } from '@ant-design/icons'
 import { getAllPublished, getMostStars, getMostViews } from '../../../api/news'
 import * as echarts from 'echarts'
 import _ from 'lodash'
@@ -8,8 +8,11 @@ import _ from 'lodash'
 const { Meta } = Card
 
 export default function Home() {
+  const [allList, setAllList] = useState([])
   const [viewList, setViewList] = useState([])
   const [starList, setStarList] = useState([])
+  const [visible, setVisible] = useState(false)
+
   useEffect(() => {
     getMostViews().then((data) => {
       setViewList(data)
@@ -19,6 +22,7 @@ export default function Home() {
     })
     getAllPublished().then((data) => {
       renderBarView(_.groupBy(data, (item) => item.category.title))
+      setAllList(data)
     })
 
     return () => {
@@ -62,6 +66,62 @@ export default function Home() {
     window.onresize = () => {
       myChart.resize()
     }
+  }
+
+  const pieRef = useRef()
+  const [pieChart, setPieChart] = useState(null)
+  const renderPieView = () => {
+    // 資料處理工作
+    const currentList = allList.filter((item) => item.author === username)
+    const groupObj = _.groupBy(currentList, (item) => item.category.title)
+
+    const list = []
+    for (const i in groupObj) {
+      list.push({
+        name: i,
+        value: groupObj[i].length
+      })
+    }
+
+    let myChart
+    if (!pieChart) {
+      myChart = echarts.init(pieRef.current)
+      setPieChart(myChart)
+    } else {
+      myChart = pieChart
+    }
+    let option
+
+    option = {
+      title: {
+        text: '當前用戶新聞分類圖示',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        orient: 'vertical',
+        left: 'left'
+      },
+      series: [
+        {
+          name: '發布數量',
+          type: 'pie',
+          radius: '50%',
+          data: list,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }
+      ]
+    }
+
+    option && myChart.setOption(option)
   }
 
   const {
@@ -108,7 +168,15 @@ export default function Home() {
               />
             }
             actions={[
-              <SettingOutlined key="setting" />,
+              <PieChartOutlined
+                key="setting"
+                onClick={() => {
+                  setTimeout(() => {
+                    setVisible(true)
+                    renderPieView()
+                  }, 0)
+                }}
+              />,
               <EditOutlined key="edit" />,
               <EllipsisOutlined key="ellipsis" />
             ]}
@@ -126,6 +194,16 @@ export default function Home() {
           </Card>
         </Col>
       </Row>
+
+      <Drawer
+        width="500px"
+        title="個人新聞分類"
+        placement="right"
+        onClose={() => setVisible(false)}
+        visible={visible}
+      >
+        <div ref={pieRef} style={{ width: '100%', height: '400px', marginTop: '30px' }}></div>
+      </Drawer>
 
       <div ref={barRef} style={{ width: '100%', height: '400px', marginTop: '30px' }}></div>
     </div>
