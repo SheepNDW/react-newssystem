@@ -58,6 +58,16 @@ export const updateNews = (id, fromInfo, content, auditState) => {
 }
 
 /**
+ * 更新訪問數或點讚數
+ * @param {Number} id - 新聞id
+ * @param {Number} newData - 訪問數量 or 點讚數
+ * @returns Promise
+ */
+export const updatePublishedNews = (id, newData) => {
+  return request(`/news/${id}`, 'patch', { ...newData })
+}
+
+/**
  * 更改審核狀態
  * @param {Number} id - 新聞 id
  * @param {Number} auditState - 審核狀態

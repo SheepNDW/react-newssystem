@@ -4,6 +4,14 @@ import { useRoutes, Navigate } from 'react-router-dom'
 export default function IndexRouter() {
   const element = useRoutes([
     {
+      path: '/news',
+      element: LazyLoad('news/News')
+    },
+    {
+      path: '/detail/:id',
+      element: LazyLoad('news/Detail')
+    },
+    {
       path: '/login',
       element: LazyLoad('login/Login')
     },
